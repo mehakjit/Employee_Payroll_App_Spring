@@ -2,17 +2,18 @@ package com.capg.PayrollApp.services;
 
 import java.util.List;
 
-import com.capg.PayrollApp.dto.EmployeePayrollDTO;
-import com.capg.PayrollApp.model.EmployeePayrollData;
+import com.capg.PayrollApp.dto.User;
+import com.capg.PayrollApp.exception.EmpPayrollException;
 
 public interface IEmployeePayrollService {
-	List<EmployeePayrollData> getEmployeePayrollData();
+	User CreateUser(User user) throws EmpPayrollException;
 
-	EmployeePayrollData getEmployeePayrollDataById(int empId);
+	User UpdateUser(User user) throws EmpPayrollException;
 
-	EmployeePayrollData createEmployeePayrollData(EmployeePayrollDTO empPayrollDTO);
+	User deleteUser(Long id) throws EmpPayrollException;
 
-	EmployeePayrollData updateEmployeePayrollData(int empId, EmployeePayrollDTO empPayrollDTO);
+	List<User> getAllUser();
+	
+	User getUserById(Long id) throws EmpPayrollException;
 
-	void deleteEmployeePayrollData(int empId);
 }

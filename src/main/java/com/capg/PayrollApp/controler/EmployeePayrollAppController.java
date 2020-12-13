@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capg.PayrollApp.dto.EmployeePayrollDTO;
 import com.capg.PayrollApp.dto.ResponseDTO;
+import com.capg.PayrollApp.dto.User;
+import com.capg.PayrollApp.exception.EmpPayrollException;
 import com.capg.PayrollApp.model.EmployeePayrollData;
 import com.capg.PayrollApp.services.IEmployeePayrollService;
 
@@ -24,45 +26,52 @@ import com.capg.PayrollApp.services.IEmployeePayrollService;
 public class EmployeePayrollAppController {
 
 		@Autowired
-		private IEmployeePayrollService employeePayrollService;
+		private IEmployeePayrollService empPayrollService;
 
-		@RequestMapping(value = { "", "/", "/get" })
-		public ResponseEntity<ResponseDTO> getEmployeePayrollData() {
-			List<EmployeePayrollData> empDataList = null;
-			empDataList = employeePayrollService.getEmployeePayrollData();
-			ResponseDTO respDTO = new ResponseDTO("Get call for Success ", empDataList);
-			return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
-		}
-
-		@GetMapping("/get/{empId}")
-		public ResponseEntity<ResponseDTO> getEmployeePayrollData(@PathVariable("empId") int empId) {
-			EmployeePayrollData empData =null;
-			empData =employeePayrollService.getEmployeePayrollDataById(empId);
-			ResponseDTO respDTO = new ResponseDTO("Get Call success for ID  ", empData);
-			return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
-		}
 
 		@PostMapping("/create")
-		public ResponseEntity<ResponseDTO> addEmployeePayrollData(@RequestBody EmployeePayrollDTO empPayrollDTO) {
-			EmployeePayrollData empData=null;
-			empData =employeePayrollService.createEmployeePayrollData(empPayrollDTO);
-			ResponseDTO respDTO = new ResponseDTO("Created EmployeePayroll Data Success", empData);
-			return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
+		public ResponseEntity<User> createUser(@RequestBody User user) {
+			try {
+				return ResponseEntity.status(HttpStatus.CREATED).body(empPayrollService.CreateUser(user));
+			} catch (EmpPayrollException e) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
 		}
 
-		@PutMapping("/update/{empId}")
-		public ResponseEntity<ResponseDTO> updateEmployeePayrollData(@PathVariable("empId") int empId,
-				@RequestBody EmployeePayrollDTO employeePayrollDTO) {
-			EmployeePayrollData employeeData = null;
-			employeeData = employeePayrollService.updateEmployeePayrollData(empId, employeePayrollDTO);
-			ResponseDTO responseDTO = new ResponseDTO("Updated Employee Payroll Data Successfully", employeeData);
-			return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+		@PutMapping("/update")
+		public ResponseEntity<User> updateUser(@RequestBody User user) {
+			try {
+				return ResponseEntity.status(HttpStatus.OK).body(empPayrollService.UpdateUser(user));
+			} catch (EmpPayrollException e) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
 		}
 
-		@DeleteMapping("/delete/{empId}")
-		public ResponseEntity<ResponseDTO> deleteEmployeePayrollData(@PathVariable("empId") int empId) {
-			employeePayrollService.deleteEmployeePayrollData(empId);
-			ResponseDTO respDTO = new ResponseDTO("Deleted Successfully", "Deleted Id " + empId);
-			return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
+		@DeleteMapping("/delete/{id}")
+		public ResponseEntity<User> deleteUser(@PathVariable("id") Long id) {
+			try {
+				return ResponseEntity.status(HttpStatus.ACCEPTED).body(empPayrollService.deleteUser(id));
+			} catch (EmpPayrollException e) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
+		}
+
+		@GetMapping("/get")
+		public ResponseEntity<List<User>> getAllUser() {
+			try {
+			return ResponseEntity.status(HttpStatus.OK).body(empPayrollService.getAllUser());
+			}catch(Exception e) {
+				 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			}
+		}
+		
+		@GetMapping("/get/{id}")
+		public ResponseEntity<User> getUserById(@PathVariable("id") Long id){
+			try {
+				return ResponseEntity.status(HttpStatus.OK).body(empPayrollService.getUserById(id));
+				}catch(Exception e) {
+					 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+				}
 		}
 }
+
